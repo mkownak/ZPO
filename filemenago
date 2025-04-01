@@ -1,0 +1,78 @@
+from typing import Any
+
+
+class File:
+    name: str
+    extension: str
+    size: int
+    _is_open: bool
+    contents: list
+
+    def __init__(self, name: str, extension: str, size: int) -> None:
+        self.name = name
+        self.extension = extension
+        self.size = size
+        self._is_open = False
+        self.contents = []
+
+    def open(self) -> str:
+        self._is_open = True
+        return "file open"
+
+    def close(self) -> str:
+        self._is_open = False
+        return "file closed"
+
+    def check(self)->bool:
+        return self._is_open
+
+    def read(self) -> list:
+        if self._is_open is True:
+            return self.contents
+        else:
+            raise Exception("File must be opened first")
+
+    def write(self, string: str) -> None:
+        if self._is_open is True:
+            self.contents.append(string)
+        else:
+            raise Exception("File must be opened first")
+
+    def delete(self) -> None:
+        if self._is_open is True:
+            self.contents = []
+        else:
+            raise Exception("File must be opened first")
+
+
+class FileFacade:
+    file: File
+
+    def __init__(self, file: File):
+        self.file = file
+
+    def read(self) -> None:
+        self.file.open()
+        print(self.file.contents)
+        self.file.close()
+
+    def write(self, string: str) -> None:
+        self.file.open()
+        self.file.contents.append(string)
+        print(f"String {string} written to a file")
+        self.file.close()
+
+    def remove(self) -> None:
+        self.file.open()
+        self.file.contents = []
+        print("file contents purged")
+        self.file.close()
+
+
+f1 = File("plik_tekstowy", "txt", 1024)
+F_facade = FileFacade(f1)
+
+F_facade.write("siema")
+F_facade.read()
+F_facade.remove()
+F_facade.read()
