@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class SmartAppliance(ABC):
@@ -61,6 +61,67 @@ class Lights(SmartAppliance):
 
 
 class SmartHome:
-    appliances: list
 
     def __init__(self):
+        self.heating = Heater()
+        self.lights = Lights()
+
+    def show_status(self):
+        print("Status of heater: ", self.heating.check_status())
+        print("status of lights: ", self.lights.check_status())
+
+
+class Command:
+    @abstractmethod
+    def execute(self):
+        pass
+
+
+class TurnOnCommand(Command):
+    def __init__(self, appliance: SmartAppliance):
+        self.appliance = appliance
+
+    def execute(self):
+        self.appliance.turn_on()
+
+
+class TurnOffCommand(Command):
+    def __init__(self, appliance: SmartAppliance):
+        self.appliance = appliance
+
+    def execute(self):
+        self.appliance.turn_off()
+
+
+class Remote:
+    def __init__(self):
+        self._commands = []
+
+    def press_button(self, command: Command):
+        self._commands.append(command)
+        command.execute()
+
+    def show_history(self):
+        for command in self._commands:
+            print(command)
+
+
+home = SmartHome()
+remote = Remote()
+
+heater_on = TurnOnCommand(home.heating)
+heater_off = TurnOffCommand(home.heating)
+
+lights_on = TurnOnCommand(home.lights)
+lights_off = TurnOffCommand(home.lights)
+
+home.show_status()
+
+remote.press_button(heater_on)
+
+home.show_status()
+
+remote.show_history()
+
+remote.press_button(lights_off)
+
